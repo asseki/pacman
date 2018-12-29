@@ -101,7 +101,7 @@ String[] directions = {"UP", "DOWN", "LEFT", "RIGHT"};
 void setup() {
   size(523, 756);
   title = loadImage("pacman.jpg");
-  
+
   // count dots
   for (int i = 0; i < dots_org.length; i++) {
     for (int j = 0; j < dots_org[0].length; j++) {
@@ -198,7 +198,6 @@ void draw() {
             dots[i][j] = dots_org[i][j];
           }
         }
-
       }
     }
     if (210 < mouseX && 210 + 165 > mouseX && 430 < mouseY && 430 + 50 > mouseY) {
@@ -229,6 +228,7 @@ void draw() {
     ellipseMode(CORNER);
     // draw maze
     pushMatrix();
+    noStroke();
     translate(0, 80);
     for (int i = 0; i < 34; i++) {
       for (int j = 1; j < 30; j++) {
@@ -595,22 +595,25 @@ void draw() {
       x = -dia;
     }
 
-    // eat dots
     int i2 = int(y/(dia/2) - 1);
     int j2 = int(x/(dia/2) - 1);
+    //eat power dots
+    if (i2 >= 0 && i2 < dots.length && j2 >= 0 && j2 < dots[0].length) {
+      if (dots[i2][j2] >= 2) {
+        monster_state = "izike";
+        for (int i = 0; i < 4; i++) {
+          if (dist(x, y, x_monster[i], y_monster[i]) < dia/2) {
+            x_monster[4] = width/2;
+            y_monster[4] = height/2;
+          }
+        }
+      }
+    }
+
+    // eat dots
     if (i2 >= 0 && i2 < dots.length && j2 >= 0 && j2 < dots[0].length && dots[i2][j2] > 0) {
       dots[i2][j2] = 0;
       num_dots--;
-      if (dots[i2][j2] == 2) {
-        monster_speed = 0;
-      }
-    }
-    
-    // eat power dots
-    if (i2 >= 0 && i2 < dots.length && j2 >= 0 && j2 < dots[0].length) {
-      if (dots[i2][j2] >= 2) {
-      monster_speed = 0;
-      }
     }
 
     // draw pacman
@@ -646,7 +649,7 @@ void draw() {
       popMatrix();
     }
 
-    // catch?
+    // catch? (eat pacman)
 
     for (int i = 0; i < 4; i++) {
       if (dist(x_monster[i], y_monster[i], x, y) < dia/2) {
@@ -728,9 +731,9 @@ void draw() {
     num_dots = num_dots_org;
     stage++;
     framerate += 2;
-    
-    
-    
+
+
+
 
     // copy dots array
     for (int i = 0; i < dots_org.length; i++) {
