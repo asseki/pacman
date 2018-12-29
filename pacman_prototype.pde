@@ -129,6 +129,8 @@ void setup() {
   enemy_color[2] = color(0, 255, 255); // light blue
   enemy_color[3] = color(#FF52CE); // pink
 
+  /* @pjs font="font.TTF"; */
+
   font = createFont("font.TTF", 32);
   textFont(font);
 }
