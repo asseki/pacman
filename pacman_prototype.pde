@@ -727,15 +727,7 @@ void draw() {
     }
   }
 
-  println(num_dots);
-  //game end
-  //if (num_dots == 0) {
-  //state = "gameend";
-  //}
-
-  //if (state == "gameend") {
-
-  //}
+  //println(num_dots);
 
   //next stage
   if (num_dots == 0) {
