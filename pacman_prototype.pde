@@ -601,11 +601,12 @@ void draw() {
     int j2 = int(x/(dia/2) - 1);
     //eat power dots
     if (i2 >= 0 && i2 < dots.length && j2 >= 0 && j2 < dots[0].length) {
+      if (dots[i2][j2] > 0) {
+        num_dots--;
+      }
       if (dots[i2][j2] >= 2) {
         monster_state = "izike";
         stcount = millis();
-      } else if (dots[i2][j2] > 0) {
-        num_dots--;
       }
       dots[i2][j2] = 0;
     }
@@ -616,14 +617,14 @@ void draw() {
         monster_state = "";
       } else if (elapsed >= 7000) {
         int rem = int(elapsed/200) % 2;
-        if (rem == 0){
+        if (rem == 0) {
           monster_state = "izike2";
         } else {
           monster_state = "izike";
         }
       }
     }
-    
+
     // draw pacman
     fill(200, 200, 0);
     noStroke();
@@ -709,7 +710,6 @@ void draw() {
         S = 45;
         E = 315;
         direction = "RIGHT";
-        frameRate(framerate);
       }
     }
     if (mouseX > 90 && mouseY >465 && mouseX < 90 + 345 && mouseY < 465 + 50) {
@@ -731,14 +731,16 @@ void draw() {
 
   //next stage
   if (num_dots == 0) {
-    x = 330;
-    y = 380;
+    x = 240;
+    y = 90;
+    for (int i = 0; i < x_monster.length; i++) {
+      x_monster[i] = 260;
+      y_monster[i] = 270;
+    }
     num_dots = num_dots_org;
     stage++;
-    framerate += 2;
-
-
-
+    framerate += 10;
+    frameRate(framerate);
 
     // copy dots array
     for (int i = 0; i < dots_org.length; i++) {
