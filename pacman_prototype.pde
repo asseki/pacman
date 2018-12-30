@@ -701,11 +701,11 @@ void draw() {
         state = "play";
         for (int i = 0; i < 4; i++) {
           enemy_color[3] = color(#FF52CE);
-          x_monster[i] = 300;
-          y_monster[i] = 400;
+          x_monster[i] = 260;
+          y_monster[i] = 270;
         }
-        x = 300;
-        y = 300;
+        x = 240;
+        y = 90;
         S = 45;
         E = 315;
         direction = "RIGHT";
