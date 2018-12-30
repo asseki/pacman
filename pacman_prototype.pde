@@ -21,6 +21,7 @@ float monster_speed = 2;
 PImage title;
 int stage = 1;
 float framerate = 40;
+int stcount;
 
 int num_dots = 0;
 int num_dots_org = 0;
@@ -112,11 +113,11 @@ void setup() {
   }
   num_dots = num_dots_org;
 
-  //monster's place
+  //monster's location
 
   for (int i = 1; i < 4; i++) {
-    x_monster[i] = 310;
-    y_monster[i] = 400;
+    x_monster[i] = 260;
+    y_monster[i] = 270;
   }
   x_monster[0] = width;
   y_monster[0] = 250 - 35;
@@ -130,7 +131,6 @@ void setup() {
   enemy_color[3] = color(#FF52CE); // pink
 
   /* @pjs font="font.TTF"; */
-
   font = createFont("font.TTF", 32);
   textFont(font);
 }
@@ -186,10 +186,10 @@ void draw() {
       if (mousePressed) {
         state = "play";
         monster_state = "";
-        x = 330;
-        y = 380;
-        x_monster[0] = 300;
-        y_monster[0] = 400;
+        x = 240;
+        y = 90;
+        x_monster[0] = 260;
+        y_monster[0] = 270;
         direction = "RIGHT";
         dia = height / 42 * 2;
         frameRate(framerate);
@@ -228,7 +228,7 @@ void draw() {
   if (state == "play") {
     speed = 2;
     ellipseMode(CORNER);
-    // draw maze
+    // 
     pushMatrix();
     noStroke();
     translate(0, 80);
@@ -310,7 +310,7 @@ void draw() {
           fill(0, 0, 255);
           rect(dia/2*(j-1), dia/2*i, dia/2, dia/2);
         } else if (maze[i][j] == 25) {
-          fill(0, 0, 255);
+          fill(#F7A47A); //skin color
           rect(dia/2*(j-1), dia/2*i, dia/2, dia/2);
         } else if (maze[i][j] == 26) {
           fill(0, 0, 255);
@@ -380,9 +380,9 @@ void draw() {
         maze[floor(r_monster)+2][circular(ceil(c_monster)+1)] == 0) {
         candidates[1] = true;
       }
-      if (maze[ceil(r_monster)-1][circular(floor(c_monster))] == 0 && 
-        maze[ceil(r_monster)-1][circular(floor(c_monster)+1)] == 0 && 
-        maze[ceil(r_monster)-1][circular(ceil(c_monster)+1)] == 0) {
+      if (maze[ceil(r_monster)-1][circular(floor(c_monster))] % 25 == 0 && 
+        maze[ceil(r_monster)-1][circular(floor(c_monster)+1)] % 25 == 0 && 
+        maze[ceil(r_monster)-1][circular(ceil(c_monster)+1)] % 25 == 0) {
         candidates[0] = true;
       }
       float diff = y - y_monster[i];
@@ -603,21 +603,27 @@ void draw() {
     if (i2 >= 0 && i2 < dots.length && j2 >= 0 && j2 < dots[0].length) {
       if (dots[i2][j2] >= 2) {
         monster_state = "izike";
-        for (int i = 0; i < 4; i++) {
-          if (dist(x, y, x_monster[i], y_monster[i]) < dia/2) {
-            x_monster[4] = width/2;
-            y_monster[4] = height/2;
-          }
+        stcount = millis();
+      } else if (dots[i2][j2] > 0) {
+        num_dots--;
+      }
+      dots[i2][j2] = 0;
+    }
+
+    if (monster_state != "") {
+      int elapsed = millis() - stcount;
+      if (elapsed >= 10000) {
+        monster_state = "";
+      } else if (elapsed >= 7000) {
+        int rem = int(elapsed/200) % 2;
+        if (rem == 0){
+          monster_state = "izike2";
+        } else {
+          monster_state = "izike";
         }
       }
     }
-
-    // eat dots
-    if (i2 >= 0 && i2 < dots.length && j2 >= 0 && j2 < dots[0].length && dots[i2][j2] > 0) {
-      dots[i2][j2] = 0;
-      num_dots--;
-    }
-
+    
     // draw pacman
     fill(200, 200, 0);
     noStroke();
@@ -655,7 +661,12 @@ void draw() {
 
     for (int i = 0; i < 4; i++) {
       if (dist(x_monster[i], y_monster[i], x, y) < dia/2) {
-        state = "gameover";
+        if (monster_state == "izike" || monster_state == "izike2") {  //eat monsters
+          x_monster[i] = 260;
+          y_monster[i] = 270;
+        } else {
+          state = "gameover";
+        }
       }
     }
   }
@@ -765,6 +776,9 @@ void Shadow (float x, float y, String d, color paint, String state, float size) 
   if (state == "izike") {
     fill(izike_color);
     stroke(izike_color);
+  } else if (state == "izike2") {
+    fill(255);
+    stroke(255);
   } else {
     fill(paint);
     stroke(paint);
@@ -789,6 +803,18 @@ void Shadow (float x, float y, String d, color paint, String state, float size) 
   if (state == "izike") {
     fill(255);
     stroke(255);
+    rect(4.5, 6, 1, 1);
+    rect(8.5, 6, 1, 1);
+    point(1.5, 11);
+    line(2.5, 10, 3.5, 10);
+    line(4.5, 11, 5.5, 11);
+    line(6.5, 10, 7.5, 10);
+    line(8.5, 11, 9.5, 11);
+    line(10.5, 10, 11.5, 10);
+    point(12.5, 11);
+  } else if (state == "izike2") {
+    fill(255, 0, 0);
+    stroke(255, 0, 0);
     rect(4.5, 6, 1, 1);
     rect(8.5, 6, 1, 1);
     point(1.5, 11);
