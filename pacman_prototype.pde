@@ -15,13 +15,14 @@ color izike_color = color(0, 0, 255); //izike(blue)
 String state = "menu";
 PFont font;
 float speed = -5;
-String monster_state = "";
+String [] monster_state = new String [4];
 float monster_size;
 float monster_speed = 2;
 PImage title;
 int stage = 1;
 float framerate = 40;
 int stcount;
+boolean izike;
 
 int num_dots = 0;
 int num_dots_org = 0;
@@ -102,6 +103,9 @@ String[] directions = {"UP", "DOWN", "LEFT", "RIGHT"};
 void setup() {
   size(523, 756);
   title = loadImage("pacman.jpg");
+  for (int i = 0; i < monster_state.length; i++) {
+    monster_state[i] = "";
+  }
 
   // count dots
   for (int i = 0; i < dots_org.length; i++) {
@@ -146,7 +150,7 @@ void draw() {
     image(title, 40, 70, 450, 100); 
 
     monster_size = 4;
-    Shadow(x_monster[0], y_monster[0] - 15, d_monster[0], enemy_color[0], monster_state, monster_size);
+    Shadow(x_monster[0], y_monster[0] - 15, d_monster[0], enemy_color[0], monster_state[0], monster_size);
 
     fill(200, 200, 0);
     noStroke();
@@ -157,7 +161,7 @@ void draw() {
     x_monster[0] += speed;
 
     if (x_monster[0] < -180) {
-      monster_state = "izike";
+      monster_state[0] = "izike";
       speed = -speed;
       //d_monster[0] = "RIGHT";
       S = 45;
@@ -165,7 +169,7 @@ void draw() {
     }
 
     if (x_monster[0] > width+200) {
-      monster_state = "";
+      monster_state[0] = "";
       speed = -speed;
       d_monster[0] = "LEFT";
       S = 225;
@@ -185,7 +189,7 @@ void draw() {
     if (210 < mouseX && 210 + 155 > mouseX && 330 < mouseY && 330 + 50 > mouseY) {
       if (mousePressed) {
         state = "play";
-        monster_state = "";
+        monster_state[0] = "";
         x = 240;
         y = 90;
         x_monster[0] = 260;
@@ -205,14 +209,14 @@ void draw() {
     if (210 < mouseX && 210 + 165 > mouseX && 430 < mouseY && 430 + 50 > mouseY) {
       if (mousePressed) {
         state = "shop";
-        monster_state = "";
+        monster_state[0] = "";
       }
     }
 
     if (170 < mouseX && 170 + 250 > mouseX && 530 < mouseY && 530 + 50 > mouseY) {
       if (mousePressed) {
         state = "setting";
-        monster_state = "";
+        monster_state[0] = "";
       }
     }
   }
@@ -355,7 +359,7 @@ void draw() {
 
     //chase pacman
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < x_monster.length; i++) {
 
       float r_monster = y_monster[i]/(dia/2);
       float c_monster = x_monster[i]/(dia/2)+1;
@@ -605,22 +609,31 @@ void draw() {
         num_dots--;
       }
       if (dots[i2][j2] >= 2) {
-        monster_state = "izike";
+        izike = true;
+        for (int i = 0; i < monster_state.length; i++) {
+          monster_state[i] = "izike";
+        }
         stcount = millis();
       }
       dots[i2][j2] = 0;
     }
 
-    if (monster_state != "") {
+    if (izike) {
       int elapsed = millis() - stcount;
       if (elapsed >= 10000) {
-        monster_state = "";
+        for (int i = 0; i < monster_state.length; i++) {
+          monster_state[i] = "";
+        }
       } else if (elapsed >= 7000) {
         int rem = int(elapsed/200) % 2;
-        if (rem == 0) {
-          monster_state = "izike2";
-        } else {
-          monster_state = "izike";
+        for (int i = 0; i < monster_state.length; i++) {
+          if (monster_state[i] != "") {
+            if (rem == 0) {
+              monster_state[i] = "izike2";
+            } else {
+              monster_state[i] = "izike";
+            }
+          }
         }
       }
     }
@@ -651,20 +664,21 @@ void draw() {
 
     //draw monster
     monster_size = dia/14;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < x_monster.length; i++) {
       pushMatrix();
       translate(0, 80);
-      Shadow(x_monster[i], y_monster[i], d_monster[i], enemy_color[i], monster_state, monster_size);
+      Shadow(x_monster[i], y_monster[i], d_monster[i], enemy_color[i], monster_state[i], monster_size);
       popMatrix();
     }
 
     // catch? (eat pacman)
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < x_monster.length; i++) {
       if (dist(x_monster[i], y_monster[i], x, y) < dia/2) {
-        if (monster_state == "izike" || monster_state == "izike2") {  //eat monsters
+        if (monster_state[i] == "izike" || monster_state[i] == "izike2") {  //eat monsters
           x_monster[i] = 260;
           y_monster[i] = 270;
+          monster_state[i] = "";
         } else {
           state = "gameover";
         }
@@ -700,7 +714,7 @@ void draw() {
     if (mouseX > 140 && mouseY > 315 && mouseX < 140 + 240 && mouseY < 315 + 50) {
       if (mousePressed) {
         state = "play";
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < x_monster.length; i++) {
           enemy_color[3] = color(#FF52CE);
           x_monster[i] = 260;
           y_monster[i] = 270;
@@ -736,6 +750,7 @@ void draw() {
     for (int i = 0; i < x_monster.length; i++) {
       x_monster[i] = 260;
       y_monster[i] = 270;
+      monster_state[i] = "";
     }
     num_dots = num_dots_org;
     stage++;
